@@ -32,9 +32,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adpters.UserFriends;
 import com.adpters.UserWeiBoInfoAdpter;
 import com.asyn.GetUserInfoTask;
+import com.bean.UserFriendsBean;
 import com.bean.UserWeiboBean;
+import com.parser.UserFriendParser;
 import com.parser.UserWeiboParser;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuth;
@@ -56,9 +59,12 @@ public class MainActivity extends Activity {
 	private final int GETWEIBOINFO = 6;
 	private final int SHOWWEIBO =7;
 	private final int SHOWWEIBOFAILURE = 8;
+	private final int GETFRIENDSUCCESS = 9;
+	private final int GETFRIENDFAILUER = 10;
    
 	private Button authlogin;
 	private Button login;
+	private Button getFriend;
 	private Button sendMessge;
 	private Button getUserInfo;
 	private Button mLoginOut;
@@ -66,11 +72,16 @@ public class MainActivity extends Activity {
 	private TextView userinfo;
 	private EditText inviteNumber;
 	private Button invteBtn;
+	
 	private LayoutInflater inflater;
 	private View weiBoView;
 	private ListView mLVWeiBoView;
 	private List<UserWeiboBean> userweiboList;
 	private UserWeiBoInfoAdpter userweiAdapter;
+	
+	private List<UserFriendsBean> userfriends;
+	private UserFriends userfriendsAdapter;
+	
 	
 	  /** 显示认证后的信息，如 AccessToken */
     private TextView mTokenText;
@@ -122,7 +133,7 @@ public class MainActivity extends Activity {
                   break;
               case GETWEIBOINFO:
             	  GetUserWeiboTask getUserInfo = new GetUserWeiboTask();
-            	  String urlweibo = "https://api.weibo.com/2/statuses/user_timeline.json?access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+100;
+            	  String urlweibo = "https://api.weibo.com/2/statuses/user_timeline.json?uid="+uid+"&access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+100;
             	  getUserInfo.execute(urlweibo);
             	  break;
               case SHOWWEIBO:
@@ -131,7 +142,12 @@ public class MainActivity extends Activity {
               case SHOWWEIBOFAILURE:
             	  Toast.makeText(getApplicationContext(), "获取信息失败", Toast.LENGTH_SHORT).show();
             	  break;
-              
+              case GETFRIENDSUCCESS:
+            	  showDialog(0x114);
+            	  break;
+              case GETFRIENDFAILUER:
+            	  Toast.makeText(getApplicationContext(), "获取信息失败", Toast.LENGTH_SHORT).show();
+            	  break;
               }
         }
     }
@@ -227,6 +243,17 @@ public class MainActivity extends Activity {
 				
 			}
 		});
+        getFriend.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				  GetUserFriendTask getUserInfo = new GetUserFriendTask();
+            	  String urlweibo = "https://api.weibo.com/2/friendships/friends/bilateral.json?uid="+uid+"&access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+50;
+            	  getUserInfo.execute(urlweibo);
+				
+			}
+		});
 	}
 	
 	
@@ -237,6 +264,7 @@ public class MainActivity extends Activity {
     	mLoginOut = (Button) findViewById(R.id.logout);
     	getUserInfo = (Button) findViewById(R.id.findUserInfo);
     	mTokenText = (TextView) findViewById(R.id.token_text_view);
+    	getFriend = (Button) findViewById(R.id.findfriendInfo);
     	userinfo =(TextView) findViewById(R.id.userInfo);
     	inviteNumber = (EditText) findViewById(R.id.uid);
     	inviteNumber.setText("2021055521");
@@ -262,16 +290,30 @@ public class MainActivity extends Activity {
 	    }
 	  @Override
 	  public Dialog onCreateDialog(int id,Bundle stat) {
+		  switch(id){
+		  case 0x113:
 			inflater = LayoutInflater.from(this);
 			weiBoView = inflater.inflate(R.layout.dialog_show, null);
 			mLVWeiBoView = (ListView)weiBoView.findViewById(R.id.showinfo);
 			userweiAdapter = new UserWeiBoInfoAdpter(getApplicationContext());
       	    userweiAdapter.setWeiBoList(userweiboList);
       	    mLVWeiBoView.setAdapter(userweiAdapter);
-			return new AlertDialog.Builder(this)
-				.setTitle(getResources().getString(R.string.weibo_hassend))
-				.setView(weiBoView).create();
+      	    break;
+		  case 0x114:
+			inflater = LayoutInflater.from(this);
+			weiBoView = inflater.inflate(R.layout.dialog_show, null);
+			mLVWeiBoView = (ListView)weiBoView.findViewById(R.id.showinfo);
+			userfriendsAdapter = new UserFriends(getApplicationContext());
+			userfriendsAdapter.setWeiBoList(userfriends);
+			mLVWeiBoView.setAdapter(userfriendsAdapter);
+		    break;
+			
 		}
+		  return new AlertDialog.Builder(this)
+			.setTitle(getResources().getString(R.string.weibo_hassend))
+			.setView(weiBoView).create();
+		  
+	  }
 		
 	  /**
 	     * 好友邀请按钮的监听器，接收好友邀请处理结果。（API请求结果的监听器）
@@ -424,6 +466,7 @@ public class MainActivity extends Activity {
                     "Auth exception : " + e.getMessage(), Toast.LENGTH_LONG).show();
 			
 		}}
+	//get weibo information
 	class GetUserWeiboTask extends AsyncTask<String, Void, Boolean> {
 
 	    private String result = "";
@@ -471,6 +514,66 @@ public class MainActivity extends Activity {
 	        } else {
 	        	Message msg = mHandle.obtainMessage();
 	            msg.what = SHOWWEIBOFAILURE;
+	            System.out.println("Failuer");
+	            mHandle.sendMessage(msg);
+	        }
+	      
+	    }
+
+	    @Override
+	    protected void onProgressUpdate(Void... values) {
+	        super.onProgressUpdate(values);
+	    }
+
+	}
+	
+	class GetUserFriendTask extends AsyncTask<String, Void, Boolean> {
+
+	    private String result = "";
+	    @Override
+	    protected Boolean doInBackground(String... params) {
+	        boolean isGetInfo = false;
+	        String urlText = params[0];
+	        try {
+	            URL url = new URL(urlText);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+	            byte[] data = new byte[1024];
+	            int len = 0;
+	            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {//若当前连接成功
+	                isGetInfo = true;
+	                InputStream inStream = conn.getInputStream();//打开输入流
+	                while ((len = inStream.read(data)) != -1) {
+	                    outStream.write(data, 0, len);
+	                }
+	                result = new String(outStream.toByteArray());//新建result变量用于获取服务器端传回的字符串
+	                inStream.close();//关闭数据输入流
+	            }
+	            outStream.close();//关闭数据输出流
+	            conn.disconnect();//关闭远程连接
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return isGetInfo;
+	    }
+
+	    @Override
+	    protected void onPostExecute(Boolean isGetInfo) {
+	        super.onPostExecute(isGetInfo);
+	        if (isGetInfo) {
+	            UserFriendParser userparser = new UserFriendParser();
+	            try{
+	              userfriends = userparser.userInfoParser(result);
+	              Message msg = mHandle.obtainMessage();
+	              msg.what = GETFRIENDSUCCESS;
+	              mHandle.sendMessage(msg);
+	            }catch(Exception e){
+	            	e.printStackTrace();
+	            }
+	            System.out.println("GetUserWeiBo Success");
+	        } else {
+	        	Message msg = mHandle.obtainMessage();
+	            msg.what = GETFRIENDFAILUER;
 	            System.out.println("Failuer");
 	            mHandle.sendMessage(msg);
 	        }

@@ -12,5 +12,5 @@
 	<string name="weibosdk_demo_token_has_existed">token has existed</string>
 	<string name="logout_failed">logout out failed</string>
 	<string name="invite_succ">invite success</string>
-	<string name="weibo_hassend">exist weibo</string>
+	<string name="weibo_hassend">weibo</string>
 </resources>

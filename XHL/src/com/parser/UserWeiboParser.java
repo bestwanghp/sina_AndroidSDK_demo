@@ -25,7 +25,7 @@ public class UserWeiboParser {
 	     for(int i =0 ;i<js.length();i++){
 	    	 UserWeiboBean user=new UserWeiboBean();
 	    	 user.setText(js.getJSONObject(i).getString("text"));
-	    	 user.setName(js.getJSONObject(i).getString("mid"));
+	    	 user.setName(js.getJSONObject(i).getJSONObject("user").getString("screen_name"));
 	    	 user.setTime(js.getJSONObject(i).getString("created_at"));
 	    	 System.out.println(user);
 	    	 userWeiboBean.add(user);

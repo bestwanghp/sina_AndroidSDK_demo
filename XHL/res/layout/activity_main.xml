@@ -46,33 +46,25 @@
     
     <Button
             android:id="@+id/logout"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:text="logout_sina" />
     <EditText
         android:id="@+id/uid" 
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
-    	android:layout_marginRight="20dp"
-    	android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+     
     	android:hint="请输入被邀请人的uid"/>
      
      <Button 
      	android:id="@+id/invite"   
         android:layout_width="fill_parent"
-    	android:layout_height="40dp"
-    	android:layout_marginLeft="20dp"
-    	android:layout_marginRight="20dp"
-    	android:layout_marginTop="5dp"
+    	android:layout_height="wrap_content"
     	android:text="邀请"/> 
     <Button 
      	android:id="@+id/getUserWeibo"   
         android:layout_width="fill_parent"
-    	android:layout_height="40dp"
-    	android:layout_marginLeft="20dp"
-    	android:layout_marginRight="20dp"
-    	android:layout_marginTop="5dp"
+    	android:layout_height="wrap_content"
     	android:text="getWeiInfo"/> 
     
     <TextView
@@ -85,5 +77,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     
-
 </LinearLayout>

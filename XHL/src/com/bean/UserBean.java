@@ -4,24 +4,49 @@ public class UserBean {
 
     private String uid;//用户UID
     private String screen_name;//用户昵称
-    private String name;//友好显示名称
     private String location;//用户所在地
-    private String profile_image_url;//用户头像地址，50×50像素
+    private String description;//描述
+    private String url;
+    private String profile_image;//用户头像地址，50×50像素
     private String gender;//性别，m：男、f：女、n：未知
-    private String avatar_large;//用户大头像地址
 
     @Override
     public String toString() {
         return "UserBean [uid=" + uid + ", screen_name=" + screen_name
-                + ", name=" + name + ", location=" + location
-                + ", profile_image_url=" + profile_image_url + ", gender="
-                + gender + ", avatar_large=" + avatar_large + "]";
+                + ", location=" + location+", description ="+description+
+                ", profile_image=" + profile_image + ", gender="
+                + gender + "]";
     }
 
     public UserBean() {
 
     }
 
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getProfile_image() {
+		return profile_image;
+	}
+
+	public void setProfile_image(String profile_image) {
+		this.profile_image = profile_image;
+	}
+
+	
     public String getUid() {
         return uid;
     }
@@ -38,14 +63,7 @@ public class UserBean {
         this.screen_name = screen_name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    
     public String getLocation() {
         return location;
     }
@@ -54,14 +72,7 @@ public class UserBean {
         this.location = location;
     }
 
-    public String getProfile_image_url() {
-        return profile_image_url;
-    }
-
-    public void setProfile_image_url(String profile_image_url) {
-        this.profile_image_url = profile_image_url;
-    }
-
+  
     public String getGender() {
         return gender;
     }
@@ -70,12 +81,6 @@ public class UserBean {
         this.gender = gender;
     }
 
-    public String getAvatar_large() {
-        return avatar_large;
-    }
-
-    public void setAvatar_large(String avatar_large) {
-        this.avatar_large = avatar_large;
-    }
+    
 
 }

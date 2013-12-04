@@ -1,0 +1,3 @@
+INDEX VERSION 1.126+E:\sina_AndroidSDK_demo\.metadata\.plugins\org.eclipse.jdt.core
+2950782245.index
+1085218891.index

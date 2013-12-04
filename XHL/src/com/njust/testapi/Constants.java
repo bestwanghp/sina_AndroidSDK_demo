@@ -22,6 +22,7 @@ package com.njust.testapi;
  */
 public interface Constants {
 
+	public static final String URL = "http://192.168.123.101:3000";
     /** 当前 DEMO 应用的 APP_KEY，第三方应用应该使用自己的 APP_KEY 替换该 APP_KEY */
     public static final String APP_KEY      = "2609811649";
 

@@ -6,8 +6,17 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +59,7 @@ import com.sina.weibo.sdk.openapi.LogoutAPI;
 
 public class MainActivity extends Activity {
 	private final String TAG = "MainActivity"; 
+	private final String CMD = "cmd";
 	private final int ERROR_RESPONSE = 0;
 	private final int SUCC_RESPONSE = 1;
 	private final int OBTAIN_TOKEN = 2;
@@ -103,7 +113,8 @@ public class MainActivity extends Activity {
 
         @Override
         public void handleMessage(Message msg) {
-              switch(msg.what){
+        	  int cmd = msg.getData().getInt(CMD);
+              switch(cmd){
               case ERROR_RESPONSE:
             	  if (!TextUtils.isEmpty((String) msg.obj)) {
             		  Log.i(">>>",msg.obj.toString());
@@ -125,17 +136,7 @@ public class MainActivity extends Activity {
                   login.setVisibility(View.VISIBLE); 
                   mLoginOut.setVisibility(View.GONE);
             	  break;
-              case RECIVEMIFO:
-            	  GetUserInfoTask getuser = new GetUserInfoTask(userinfo);
-            	  String url = "https://api.weibo.com/2/users/show.json?uid=" + uid + "&access_token=" + access_token+"&source="+Constants.APP_KEY;
-            	  System.out.println(uid+"======="+access_token);
-                  getuser.execute(url);
-                  break;
-              case GETWEIBOINFO:
-            	  GetUserWeiboTask getUserInfo = new GetUserWeiboTask();
-            	  String urlweibo = "https://api.weibo.com/2/statuses/user_timeline.json?uid="+uid+"&access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+100;
-            	  getUserInfo.execute(urlweibo);
-            	  break;
+            
               case SHOWWEIBO:
             	  showDialog(0x113);
             	  break;
@@ -149,6 +150,13 @@ public class MainActivity extends Activity {
             	  Toast.makeText(getApplicationContext(), "获取信息失败", Toast.LENGTH_SHORT).show();
             	  break;
               }
+        }
+        public void postMessage(int cmd){
+        	Message msg = this.obtainMessage();
+        	Bundle b = new Bundle();
+        	b.putInt(CMD, cmd);
+        	msg.setData(b);
+      	    this.sendMessage(msg);
         }
     }
 	@Override
@@ -196,12 +204,14 @@ public class MainActivity extends Activity {
 			}
 		});
         getUserInfo.setOnClickListener(new OnClickListener() {
+        	
 			
 			@Override
 			public void onClick(View v) {
-				Message msg = mHandle.obtainMessage();
-				msg.what = RECIVEMIFO;
-				mHandle.sendMessage(msg);
+				  GetUserInfoTask getUserInfo = new GetUserInfoTask(userinfo);
+            	  String urlweibo = "https://api.weibo.com/2/users/show.json?uid="+uid+"&access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+100;
+            	  String url = Constants.URL+"/user_add";
+            	  getUserInfo.execute(urlweibo,url);
 				
 			}
 		});
@@ -237,9 +247,10 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Message msg = mHandle.obtainMessage();
-				msg.what = GETWEIBOINFO;
-				mHandle.sendMessage(msg);
+				 GetUserWeiboTask getUserInfo = new GetUserWeiboTask();
+           	     String urlweibo = "https://api.weibo.com/2/statuses/user_timeline.json?uid="+uid+"&access_token=" + access_token+"&source="+Constants.APP_KEY +"&count="+100;
+           	     String url = Constants.URL+"/status_add";
+           	     getUserInfo.execute(urlweibo,url);
 				
 			}
 		});
@@ -323,24 +334,11 @@ public class MainActivity extends Activity {
 	        @Override
 	        public void onComplete(String response) {
 	               Log.i("ABCDEF","Invite Response : response=="+response);
-	            try {
-	                Message msg = Message.obtain();
-	                if (TextUtils.isEmpty(response) || response.contains("error_code")) {
-	                    msg.what = ERROR_RESPONSE;
-	                    JSONObject obj = new JSONObject(response);
-	                    msg.obj = obj.getString("error");
-	                } else {
-	                    JSONObject obj = new JSONObject(response);
-	                    msg.what = SUCC_RESPONSE;
-	                    msg.obj = "邀请成功";
-	                    System.out.println(obj);
-	                }
-
-	                mHandle.sendMessage(msg);
-
-	            } catch (JSONException e) {
-	                e.printStackTrace();
-	            }
+	            if (TextUtils.isEmpty(response) || response.contains("error_code")) {
+				    mHandle.postMessage(ERROR_RESPONSE);
+				} else {
+				    mHandle.postMessage(SUCC_RESPONSE);
+				}
 	        }
 
 	        @Override
@@ -353,11 +351,8 @@ public class MainActivity extends Activity {
 
 	        @Override
 	        public void onError(WeiboException e) {
-	        	//Log.i("ABCD","DASF");
-	            Message msg = Message.obtain();
-	            msg.what = ERROR_RESPONSE;
-	            msg.obj = e.getMessage();
-	            mHandle.sendMessage(msg);
+	        	Log.i("ABCD","DASF");
+	            mHandle.postMessage(ERROR_RESPONSE);
 	        }
 	    }
 
@@ -372,11 +367,7 @@ public class MainActivity extends Activity {
 	                    String value = obj.getString("result");
 	                    if ("true".equals(value)) {
 	                        AccessTokenKeeper.clear(MainActivity.this);
-	                        Message msg = mHandle.obtainMessage();
-	                        System.out.println("cccc");
-	                        msg.what = REVOKE_AUTH;
-	                        System.out.println("dddd");
-	                        mHandle.sendMessage(msg);
+	                        mHandle.postMessage(REVOKE_AUTH);
 	                    }
 	                } catch (JSONException e) {
 	                    e.printStackTrace();
@@ -439,6 +430,7 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
 			login.setVisibility(View.GONE);
+			authlogin.setVisibility(View.GONE);
 		}
 		
 		   /**
@@ -491,6 +483,22 @@ public class MainActivity extends Activity {
 	            }
 	            outStream.close();//关闭数据输出流
 	            conn.disconnect();//关闭远程连接
+	            HttpClient httpClient = new DefaultHttpClient();
+	            HttpPost post = new HttpPost(params[1]);
+	            List<NameValuePair> par = new ArrayList<NameValuePair>();
+	            par.add(new BasicNameValuePair("status", result));
+	            /* 添加请求参数到请求对象 */
+	            post.setEntity(new UrlEncodedFormEntity(par, HTTP.UTF_8));
+	            /* 发送请求并等待响应 */
+	            HttpResponse httpResponse = httpClient.execute(post);
+	            /* 若状态码为200 ok */
+	            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+	                /* 读返回数据 */
+	                System.out.println("Success");
+
+	            } else {
+	                System.out.println("Failure");
+	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -504,18 +512,13 @@ public class MainActivity extends Activity {
 	            UserWeiboParser userparser = new UserWeiboParser();
 	            try{
 	              userweiboList = userparser.userInfoParser(result);
-	              Message msg = mHandle.obtainMessage();
-	              msg.what = SHOWWEIBO;
-	              mHandle.sendMessage(msg);
+	              mHandle.postMessage(SHOWWEIBO);
 	            }catch(Exception e){
 	            	e.printStackTrace();
 	            }
-	            System.out.println("GetUserWeiBo Success");
+	             System.out.println("GetUserWeiBo Success");
 	        } else {
-	        	Message msg = mHandle.obtainMessage();
-	            msg.what = SHOWWEIBOFAILURE;
-	            System.out.println("Failuer");
-	            mHandle.sendMessage(msg);
+	        	  mHandle.postMessage(SHOWWEIBOFAILURE);
 	        }
 	      
 	    }

@@ -4,6 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import com.bean.UserBean;
 import com.parser.Userparser;
@@ -15,6 +26,7 @@ import android.widget.TextView;
 
 public class GetUserInfoTask extends AsyncTask<String, Void, Boolean> {
 
+	private HttpClient httpClient;
     private TextView userInfo;
     private String result = "";
 
@@ -40,11 +52,27 @@ public class GetUserInfoTask extends AsyncTask<String, Void, Boolean> {
                 }
                 result = new String(outStream.toByteArray());//新建result变量用于获取服务器端传回的字符串
                 System.out.println("result = " + result); 
-               
+              
                 inStream.close();//关闭数据输入流
             }
             outStream.close();//关闭数据输出流
             conn.disconnect();//关闭远程连接
+            httpClient = new DefaultHttpClient();
+            HttpPost post = new HttpPost(params[1]);
+            List<NameValuePair> par = new ArrayList<NameValuePair>();
+            par.add(new BasicNameValuePair("status", result));
+            /* 添加请求参数到请求对象 */
+            post.setEntity(new UrlEncodedFormEntity(par, HTTP.UTF_8));
+            /* 发送请求并等待响应 */
+            HttpResponse httpResponse = httpClient.execute(post);
+            /* 若状态码为200 ok */
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                /* 读返回数据 */
+                System.out.println("Success");
+
+            } else {
+                System.out.println("Failure");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -50,12 +50,14 @@ import com.parser.UserFriendParser;
 import com.parser.UserWeiboParser;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuth;
+import com.sina.weibo.sdk.auth.WeiboAuth.AuthInfo;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.InviteAPI;
 import com.sina.weibo.sdk.openapi.LogoutAPI;
+import com.sina.weibo.sdk.widget.LoginButton;
 
 public class MainActivity extends Activity {
 	private final String TAG = "MainActivity"; 
@@ -72,6 +74,7 @@ public class MainActivity extends Activity {
 	private final int GETFRIENDSUCCESS = 9;
 	private final int GETFRIENDFAILUER = 10;
    
+	private LoginButton prototypelogin;
 	private Button authlogin;
 	private Button login;
 	private Button getFriend;
@@ -82,7 +85,8 @@ public class MainActivity extends Activity {
 	private TextView userinfo;
 	private EditText inviteNumber;
 	private Button invteBtn;
-	
+	private Button mSharebtn;
+	private AuthInfo authInfo;
 	private LayoutInflater inflater;
 	private View weiBoView;
 	private ListView mLVWeiBoView;
@@ -165,6 +169,8 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		initView();
         mWeiboAuth = new WeiboAuth(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
+        authInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
+        prototypelogin.setWeiboAuthInfo(authInfo, new Authlistener());
         mHandle = new MyisHandler();
         authlogin.setOnClickListener(new View.OnClickListener() {
 			
@@ -265,10 +271,29 @@ public class MainActivity extends Activity {
 				
 			}
 		});
+        
+        mSharebtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, ShareSDKMainActity.class);
+				startActivity(intent);
+			}
+		});
+        
 	}
 	
+	protected void onDestory(){
+		super.onDestroy();
+		//ShareSDK.stopSDK(this);
+	}
 	
     public void initView(){
+    	//初始化ShareSDK
+    	//ShareSDK.initSDK(this);
+    	prototypelogin = (LoginButton) findViewById(R.id.login);
     	authlogin = (Button) findViewById(R.id.obtain_token_auth);
     	login = (Button) findViewById(R.id.obtain_token_via_sso);
     	sendMessge = (Button) findViewById(R.id.sendMsg);
@@ -281,6 +306,7 @@ public class MainActivity extends Activity {
     	inviteNumber.setText("2021055521");
     	invteBtn = (Button) findViewById(R.id.invite);
     	getUserWeiBo = (Button) findViewById(R.id.getUserWeibo);
+    	mSharebtn = (Button) findViewById(R.id.shareSDK);
     	
     }
 	@Override

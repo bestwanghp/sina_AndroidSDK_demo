@@ -59,25 +59,31 @@ public final class R {
         public static final int sina=0x7f020014;
     }
     public static final class id {
-        public static final int action_settings=0x7f090012;
-        public static final int findUserInfo=0x7f090003;
-        public static final int findfriendInfo=0x7f090004;
-        public static final int getCreatTime=0x7f09000e;
-        public static final int getUserWeibo=0x7f090008;
-        public static final int getWeiboInfo=0x7f09000c;
-        public static final int getWeiboName=0x7f09000d;
-        public static final int image=0x7f090011;
-        public static final int invite=0x7f090007;
-        public static final int logout=0x7f090005;
-        public static final int obtain_token_auth=0x7f090000;
-        public static final int obtain_token_via_sso=0x7f090001;
-        public static final int screen_name=0x7f09000b;
-        public static final int sendMsg=0x7f090002;
-        public static final int sendText=0x7f090010;
-        public static final int showinfo=0x7f09000f;
-        public static final int token_text_view=0x7f090009;
-        public static final int uid=0x7f090006;
-        public static final int userInfo=0x7f09000a;
+        public static final int action_settings=0x7f090018;
+        public static final int btnLogin=0x7f090014;
+        public static final int btnShareAll=0x7f090016;
+        public static final int btnShareAllGui=0x7f090015;
+        public static final int btnUserInfo=0x7f090017;
+        public static final int findUserInfo=0x7f090004;
+        public static final int findfriendInfo=0x7f090005;
+        public static final int getCreatTime=0x7f090010;
+        public static final int getUserWeibo=0x7f090009;
+        public static final int getWeiboInfo=0x7f09000e;
+        public static final int getWeiboName=0x7f09000f;
+        public static final int image=0x7f090013;
+        public static final int invite=0x7f090008;
+        public static final int login=0x7f090000;
+        public static final int logout=0x7f090006;
+        public static final int obtain_token_auth=0x7f090001;
+        public static final int obtain_token_via_sso=0x7f090002;
+        public static final int screen_name=0x7f09000d;
+        public static final int sendMsg=0x7f090003;
+        public static final int sendText=0x7f090012;
+        public static final int shareSDK=0x7f09000a;
+        public static final int showinfo=0x7f090011;
+        public static final int token_text_view=0x7f09000b;
+        public static final int uid=0x7f090007;
+        public static final int userInfo=0x7f09000c;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -85,6 +91,7 @@ public final class R {
         public static final int adpter_showweibo=0x7f030002;
         public static final int dialog_show=0x7f030003;
         public static final int sendmsgdemo=0x7f030004;
+        public static final int sharesdk_main=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f080000;

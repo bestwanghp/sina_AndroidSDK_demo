@@ -8,6 +8,12 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".WBAuthActivity" >
+    <com.sina.weibo.sdk.widget.LoginButton 
+        android:id="@+id/login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/com_sina_weibo_sdk_login_button_with_account_text"
+        />
 
     <Button
         android:id="@+id/obtain_token_auth"
@@ -61,11 +67,16 @@
         android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:text="邀请"/> 
-    <Button 
+     <Button 
      	android:id="@+id/getUserWeibo"   
         android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:text="getWeiInfo"/> 
+     <Button 
+     	android:id="@+id/shareSDK"   
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:text="shareSDK Function"/> 
     
     <TextView
         android:id="@+id/token_text_view"
